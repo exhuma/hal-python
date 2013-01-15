@@ -1,0 +1,29 @@
+{
+  "_links": {
+    "self": {"href": "/document/1"},
+    "author": {"href": "/document/1/author"}
+  },
+  "_embedded": {
+    "something": {
+      "_links": {
+        "self": {"href": "/document/1/something"}
+      },
+      "data": "wicked"
+    },
+    "tags": [
+      {
+        "_links": {
+          "self": {"href": "/document/1/tags/0"}
+        },
+        "name": "example"
+      },
+      {
+        "_links": {
+          "self": {"href": "/document/1/tags/1"}
+        },
+        "name": "document"
+      }
+    ]
+  },
+  "title": "Example Document"
+}
