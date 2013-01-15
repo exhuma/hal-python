@@ -54,6 +54,10 @@ class Document(object):
         data = object.__getattribute__(self, '_data')
         return "<Document %s>" % (data['_links']['self']['href'])
 
+    def __str__(self):
+        data = object.__getattribute__(self, '_data')
+        return json.dumps(data)
+
     def __iter__(self):
         data = object.__getattribute__(self, '_data')
         for key in data:
