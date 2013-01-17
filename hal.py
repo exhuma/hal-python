@@ -9,6 +9,53 @@ except ImportError:
 LOG = logging.getLogger(__name__)
 
 
+class Link(object):
+    """
+    Object to encapsulate HAL links.
+
+    If an attribute of the link is accessed and the document had not been
+    fetched before, a GET request is sent to the ``href`` of this Link.
+
+    :param rel: The relation name.
+    :type rel: basestring
+    :param obj: A dictionary representing the link, following the HAL spec for
+                links.
+    :type obj: dict
+    """
+
+    def __init__(self, rel, obj):
+        self._data = obj
+        self._document = None
+        self.rel = rel
+
+    def __repr__(self):
+        return "Link(%r, %r)" % (self.rel, self._data)
+
+    def __getattribute__(self, attr):
+        if attr in ('_document', '_fetch_document', '_data', 'rel'):
+            return object.__getattribute__(self, attr)
+        if not self._document:
+            self._fetch_document()
+        LOG.warning('Links are not yet fully implemented')
+        return getattr(self._document, attr)
+
+    def _fetch_document(self):
+        """
+        Send a GET request to the href of this link and stores the result
+        in a local variable.
+        """
+        LOG.warning('Links are not yet fully implemented')
+        print 'fetching document (dummy)'
+        self._document = Document(u'/author/10')
+        self._document.name = u'John Doe'
+
+    def asdict(self):
+        """
+        Returns a HAL style dict.
+        """
+        return self._data
+
+
 class Document(object):
 
     @staticmethod
@@ -46,8 +93,7 @@ class Document(object):
         elif "_embedded" in data and attr in data['_embedded']:
             return Document.makeDocument(data['_embedded'][attr])
         elif "_links" in data and attr in data['_links']:
-            raise NotImplementedError('Dynamically retrieving attributes '
-                    'from "_links" is not yet supported!')
+            return Link(attr, data['_links'][attr])
         raise AttributeError('%r has no attribute %r' % (self, attr))
 
     def __repr__(self):
@@ -81,6 +127,8 @@ class Document(object):
             if isinstance(value, Document) or (
                     isinstance(value, list) and all([isinstance(_, Document) for _ in value])):
                 data['_embedded'][name] = value.asdict()
+            elif isinstance(value, Link):
+                data['_links'][name] = value.asdict()
             else:
                 data[name] = value
 
