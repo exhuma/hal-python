@@ -57,11 +57,29 @@ class Link(object):
 
 
 class Document(object):
+    """
+    A HAL Document representation.
+
+    :param selfurl: The URL pointing to self.
+    :type selfurl: basestring
+    """
 
     @staticmethod
     def makeDocument(obj):
         """
-        Constructs a HAL document from an object.
+        Factory method to construct Document instances from different sources.
+
+        The source (``obj``) can be any of the following:
+
+        * A ``dict`` -- This assumes that the dict follows the HAL spec and
+          implements all required keys.
+        * A file-like object (any object with a ``read`` method). This should
+          contain a JSON representation of the HAL document.
+        * A string. Again, this should be a valid JSON representation
+          following the HAL spec.
+        * A list. This assumes, that each item is a valid HAL Document
+          representation. The items are instantiated using
+          ``Document.makeDocument``, so they can be of any of the above types.
         """
         instance = Document()
         if isinstance(obj, dict):
@@ -133,5 +151,8 @@ class Document(object):
                 data[name] = value
 
     def asdict(self):
+        """
+        Returns a dictionary following the HAL spec.
+        """
         data = object.__getattribute__(self, '_data')
         return data
